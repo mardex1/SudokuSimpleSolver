@@ -1,4 +1,4 @@
-#!/home/mardin/Prog/sudoku_solver/venv/bin/python3
+#!/home/mardin/Prog/SudokuSimpleSolver/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

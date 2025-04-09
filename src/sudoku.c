@@ -26,6 +26,9 @@ int main() {
             printPuzzle(sudoku->squares); 
         }
     }
+    if (progress == 1) {
+        printf("\n\nSUDOKU WAS SOLVED SUCESSFULLY!!\n\n");
+    }
 
 
     return 0;
