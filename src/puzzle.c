@@ -10,6 +10,25 @@ Sudoku * createSudoku(Square*** squares, Box ** boxes) {
     return sudoku;
 }
 
+void printPossibles(Square *** sudoku) {
+    int i, j, k;
+
+    for(i = 0; i < SIZE_ROWS; i++) {
+        for(j = 0; j < SIZE_COLUMNS; j++) {
+            printf(" (");
+            for(k = 0; k < SIZE_ROWS; k++) {
+                if(!sudoku[i][j]->possible[k]) {
+                    printf("%d,", k+1);
+                }   
+            }
+            printf(") - %d", sudoku[i][j]->number);
+        
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+}
+
 int checkColumns(Square*** sudoku) {
     int i, j, k, cont;
     int row, col;
@@ -79,6 +98,12 @@ int checkRows(Square*** sudoku) {
 
 void fixRowCol(int row, int col, Square *** sudoku, int num) {
     int i, j, k;
+
+    if(num == 0) {
+
+    }
+
+
     for(k = 0; k < SIZE_ROWS; k++) {
         sudoku[row][col]->possible[k] = 1;
     }   
@@ -244,4 +269,132 @@ void printPuzzle(Square *** puzzle) {
             
         }printf(" | \n");
     }printf(" -------------------------------------\n");
+}
+
+int backtracking(Square *** sudoku, Box ** boxes) {
+    if (validSudoku(sudoku, boxes, true)){
+        return 1;
+    }
+
+    int i, j, x;
+    for(i = 0; i < SIZE_ROWS; i++) {
+        for(j = 0; j < SIZE_COLUMNS; j++) {
+            if(sudoku[i][j]->number == 0) {
+                for(x = 1; x <= 9; x++) {
+                    // add number
+                    sudoku[i][j]->number = x;
+                    sudoku[i][j]->possible[x-1] = 1;
+                    sudoku[i][j]->solvable = 0;
+                    UNSOLVED--;
+                    fixRowCol(i, j, sudoku, x);
+                    fixBoxes(i, j, sudoku, x);
+                    if(validSudoku(sudoku, boxes, false) && backtracking(sudoku, boxes)) return 1;
+                    //remove number
+                    removeNumber(x, i, j, sudoku, boxes);
+                }
+                return 0;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void removeNumber(int num, int row, int col, Square *** sudoku, Box ** boxes) {
+    int i, j, k;
+
+    // Check square column  
+    for(i = 0; i < SIZE_ROWS; i++) {
+        if(sudoku[i][col]->number == 0) {
+            sudoku[i][col]->possible[num-1] = 0;
+        } 
+    }
+    // Check square line
+    for(j = 0; j < SIZE_ROWS; j++) {
+        if(sudoku[row][j]->number == 0) {
+            sudoku[row][j]->possible[num-1] = 0;
+        } 
+    }
+
+    // Check square box
+    for(i = 0; i < SIZE_ROWS; i++) {
+        for(j = 0; j < SIZE_ROWS; j++) {
+            if(boxes[i]->squares[j]->number == 0) {
+                boxes[i]->squares[j]->possible[num-1] = 0;
+            }
+        }
+    }
+
+    // Remove number
+    sudoku[row][col]->number = 0;
+    sudoku[row][col]->possible[num-1] = 0;
+    int sum = 0;
+    for(k = 0; k < SIZE_ROWS; k++) {
+        sum += sudoku[row][col]->possible[k];
+    }
+    sudoku[row][col]->solvable = sum;
+    UNSOLVED++;
+}
+
+int validSudoku(Square *** sudoku, Box ** boxes, _Bool final) {
+    int i, j, k;
+    int num;
+    int possibles[9];
+    
+    // Check lines
+    for(i = 0; i < SIZE_ROWS; i++) {
+        for(k = 0; k < 9; k++) {
+            possibles[k] = 0;
+        }
+            for(j = 0; j < SIZE_COLUMNS; j++) {
+                num = sudoku[i][j]->number;
+                if(num == 0) continue;
+                else if(possibles[num-1] == 0) {
+                    possibles[num-1] = 1;
+                }else{
+                    return 0;
+                }
+            }
+    }
+    
+    // Check columns
+    for(j = 0; j < SIZE_COLUMNS; j++) {
+        for(k = 0; k < 9; k++) {
+            possibles[k] = 0;
+        }
+            for(i = 0; i < SIZE_COLUMNS; i++) {
+                num = sudoku[i][j]->number;
+                if(num == 0) continue;
+                else if(possibles[num-1] == 0) {
+                    possibles[num-1] = 1;
+                }else{
+                    return 0;
+                }
+            }
+    }
+
+    // Check boxes
+    for(i = 0; i < SIZE_ROWS; i++) {
+        for(k = 0; k < 9; k++) {
+            possibles[k] = 0;
+        }
+        for(j = 0; j < SIZE_ROWS; j++) {
+            num = boxes[i]->squares[j]->number;
+            if(num == 0) continue;
+            else if(possibles[num-1] == 0) {
+                possibles[num-1] = 1;
+            }else{
+                return 0;
+            }
+        }
+    }
+    if(final == true) {
+        for(i = 0; i < SIZE_ROWS; i++) {
+            for(j = 0; j < SIZE_COLUMNS; j++) {
+                if(sudoku[i][j]->number == 0) return 0;
+            }
+        }
+    }
+
+    return 1;
 }

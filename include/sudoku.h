@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <stdbool.h>
 
 extern int UNSOLVED; // Keeps track of how many squares have been solved.  
 extern int SIZE_ROWS;
@@ -51,5 +52,9 @@ int checkColumns(Square*** squares);
 Box** createBoxes();
 void fixBoxes(int row, int col, Square *** sudoku, int num); 
 int boxSingles(Square *** sudoku, Box ** boxes);
+
+int backtracking(Square *** sudoku, Box ** boxes);
+int validSudoku(Square *** sudoku, Box ** boxes, _Bool final);
+void removeNumber(int num, int row, int col, Square *** sudoku, Box ** boxes);
 
 #endif
