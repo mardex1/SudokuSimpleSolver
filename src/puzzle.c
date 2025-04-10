@@ -99,11 +99,6 @@ int checkRows(Square*** sudoku) {
 void fixRowCol(int row, int col, Square *** sudoku, int num) {
     int i, j, k;
 
-    if(num == 0) {
-
-    }
-
-
     for(k = 0; k < SIZE_ROWS; k++) {
         sudoku[row][col]->possible[k] = 1;
     }   
@@ -232,13 +227,12 @@ int ** createPuzzle(){
             i++;
         }
     } else printf("Error opening file.\n");
-    printf("\n------------------------------------------------\n\n\n\n");   
     srand(time(NULL));
     int r = rand();
     r = r % 100;
     printf("%d\n", r);
 
-    char * puzzle_line = sudoku_puzzles[r];
+    char * puzzle_line = strdup(sudoku_puzzles[r]);
     char * token = strtok(puzzle_line, " ");
     for(i = 0; i < 9; i++) {
         for(j = 0; j < 9; j++) {
@@ -255,6 +249,7 @@ int ** createPuzzle(){
             puzzle[i][j] = array[i][j];
         }
     }
+    
     return puzzle;
 }
 
@@ -397,4 +392,30 @@ int validSudoku(Square *** sudoku, Box ** boxes, _Bool final) {
     }
 
     return 1;
+}
+
+void freeSudoku(Sudoku * sudoku, int ** puzzle) {
+    int i, j;
+    for(i = 0; i < SIZE_ROWS; i++) {
+        for(j = 0; j < SIZE_COLUMNS; j++) {
+            free(sudoku->squares[i][j]);
+        }
+        free(sudoku->squares[i]);
+    }
+    free(sudoku->squares);
+
+    for(i = 0; i < 9; i++) {
+        free(sudoku->boxes[i]);
+    }
+    free(sudoku->boxes);
+
+    for(i = 0; i < SIZE_ROWS; i++) {
+        free(puzzle[i]);
+    }
+    free(puzzle);
+
+    free(sudoku);
+
+
+
 }

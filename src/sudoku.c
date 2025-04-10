@@ -40,6 +40,7 @@ int main() {
         }
     }
 
+    freeSudoku(sudoku, puzzle);
     
     return 0;
 }

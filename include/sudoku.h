@@ -53,8 +53,12 @@ Box** createBoxes();
 void fixBoxes(int row, int col, Square *** sudoku, int num); 
 int boxSingles(Square *** sudoku, Box ** boxes);
 
+// Backtracking fuctions
 int backtracking(Square *** sudoku, Box ** boxes);
 int validSudoku(Square *** sudoku, Box ** boxes, _Bool final);
 void removeNumber(int num, int row, int col, Square *** sudoku, Box ** boxes);
+
+// Free
+void freeSudoku(Sudoku * sudoku, int ** puzzle);
 
 #endif
